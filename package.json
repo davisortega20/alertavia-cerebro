@@ -1,4 +1,5 @@
-"name": "alertavia-cerebro",
+{
+  "name": "alertavia-cerebro",
 "version": "1.0.0",
 "main": "cerebro.js",
 "scripts": {

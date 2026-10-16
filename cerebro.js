@@ -1,35 +1,31 @@
-const admin = require("firebase-admin");
-const serviceAccount = require("./llave.json");
+const firebase = require('firebase');
+require('firebase/database');
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: `https://${serviceAccount.project_id}-default-rtdb.firebaseio.com`
+// Conexión directa sin llave
+firebase.initializeApp({
+  databaseURL: "https://alertavia-default-rtdb.firebaseio.com"
 });
 
-const db = admin.database();
-console.log("🧠 Cerebro encendido! Proyecto:", serviceAccount.project_id);
-console.log("Conectando a Firebase...");
+const db = firebase.database();
 
-async function revisarVias() {
-  const ahora = new Date().toLocaleString('es-CO', {timeZone: 'America/Bogota'});
-  console.log("\n[" + ahora + "] Revisando via...");
-  const datos = {
-    estaCerrada: false,
-    mensaje: "Via habilitada, paso normal - Sistema AlertaVia funcionando!",
-    hora: ahora,
-    fuente: "Sistema Automatico AlertaVia",
-    confianza: "PRUEBA EXITOSA",
-    votos: 0
-  };
+console.log("AlertaVia CEREBRO prendido...");
+
+async function verificar() {
   try {
-    await db.ref("via_santa_elena").set(datos);
-    console.log("✅ ¡Firebase actualizado! Tu app ya debe decir VIA ABIERTA");
-  } catch (err) {
-    console.log("❌ Error:", err.message);
-    console.log("OJO: Tienes que crear la base de datos en Firebase");
+    const estado = {
+      estaCerrada: false,
+      mensaje: "Vía Santa Elena - Paso habilitado",
+      hora: new Date().toLocaleString("es-CO", {timeZone: "America/Bogota"}),
+      fuente: "AlertaVia Comunidad",
+      esReal: true
+    };
+    
+    await db.ref("via_santa_elena").set(estado);
+    console.log("✅ Actualizado en Firebase:", estado.hora);
+  } catch (e) {
+    console.log("Error:", e.message);
   }
 }
 
-revisarVias();
-setInterval(revisarVias, 3*60*1000);
-console.log("Deja esta ventana abierta. Revisara cada 3 minutos.");
+verificar();
+setInterval(verificar, 10 * 60 * 1000);
